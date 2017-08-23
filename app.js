@@ -12,8 +12,8 @@ app.use(bodyParser.json({type: 'application/json'}));
 
 const WELCOME = 'input.welcome';
 
-exports.conversationComponent = functions.https.onRequest((req, res) => {
-  const app = new ApiAiApp({request: req, response: res});
+app.post('/', function (req, res) {
+  const assistant = new Assistant({request: req, response: res});
   console.log('Request headers: ' + JSON.stringify(req.headers));
   console.log('Request body: ' + JSON.stringify(req.body));
 
@@ -33,7 +33,7 @@ exports.conversationComponent = functions.https.onRequest((req, res) => {
   const actionMap = new Map();
   actionMap.set(WELCOME, welcome);
   
-  app.handleRequest(actionMap);
+  assistant.handleRequest(actionMap);
 });
 
 if (module === require.main) {
