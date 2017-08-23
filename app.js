@@ -10,32 +10,29 @@ let bodyParser = require('body-parser');
 let app = express();
 app.use(bodyParser.json({type: 'application/json'}));
 
-const WELCOME = 'input.welcome';
-
 app.post('/', function (req, res) {
   const assistant = new Assistant({request: req, response: res});
   console.log('Request headers: ' + JSON.stringify(req.headers));
   console.log('Request body: ' + JSON.stringify(req.body));
 
-  // Welcome
-  function welcome (app) {
-    app.ask(app.buildRichResponse()
-      .addSimpleResponse({speech: 'Hi there!', displayText: 'Hello there!'})
-      .addSimpleResponse({
-        speech: 'I can show you basic cards, lists and carousels as well as ' +
-          'suggestions on your phone',
-        displayText: 'I can show you basic cards, lists and carousels as ' +
-          'well as suggestions'})
-      .addSuggestions(
-        ['Basic Card', 'List', 'Carousel', 'Suggestions']));
-  }
-
-  const actionMap = new Map();
-  actionMap.set(WELCOME, welcome);
+  const WELCOME_INTENT = 'input.welcome';
+  const NUMBER_INTENT = 'input.number';
   
+  function welcomeIntent (assistant) {
+    assistant.ask('Welcome to action snippets! Say a number.',
+      ['Say any number', 'Pick a number', 'We can stop here. See you soon.']);
+  }
+  
+  function numberIntent (assistant) {
+    const number = assistant.getArgument(NUMBER_ARGUMENT);
+    assistant.tell('You said ' + number);
+  }
+  
+  const actionMap = new Map();
+  actionMap.set(WELCOME_INTENT, welcomeIntent);
+  actionMap.set(NUMBER_INTENT, numberIntent);
   assistant.handleRequest(actionMap);
 });
-
 if (module === require.main) {
   // [START server]
   // Start the server
